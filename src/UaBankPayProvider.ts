@@ -4,7 +4,7 @@ import unicodeToWin1251 from 'utf8-to-win1251';
 
 // noinspection JSUnusedGlobalSymbols
 export default class UaBankPayProvider {
-    generatePayLink(request: UaBankPayLinkRequest): string {
+    public static generatePayLink(request: UaBankPayLinkRequest): string {
         // NBU QR code format specification: https://bank.gov.ua/qr/
         const baseUrl = 'https://bank.gov.ua/qr/';
 
