@@ -24,10 +24,27 @@ specification. Some features may not be implemented yet, but feel free to contri
 (and donating to any Ukrainian charity you want) if you need something specific.
 
 ## Usage
-To use this library, you need to install it first. You can do this using `npm`:
+To use this library with [Node](https://nodejs.org/), you need to install it first. You can do this using `npm`:
 
-```bash
+```powershell
 npm install @sirkadirov/uabankpay
+```
+
+Also, if you prefer using [JSR](https://jsr.io/), you can install it using the following command (with `npx`):
+
+```powerShell
+npx jsr add @sirkadirov/uabankpay
+```
+For [Deno](https://deno.com/) users, you can add the library using the following command:
+
+```powershell
+deno add jsr:@sirkadirov/uabankpay
+```
+
+Those, who prefer using [Bun](https://bun.com/), can install the library using the following command:
+
+```powershell
+bunx jsr add @sirkadirov/uabankpay
 ```
 
 Then, you can import the library and use it in your code. Here's a quick example of how to import the library
@@ -56,6 +73,10 @@ const paymentRequest: UaBankPayLinkRequest = {
 const paymentLink: string = UaBankPayProvider.generatePayLink(paymentRequest);
 console.log(paymentLink); // This link can be used directly or used in QR code generation
 ```
+
+> Note that the library uses `Buffer` for encoding the payment request data, which is a built-in class in `Node.js`.
+> If you are using this library in a browser environment, make sure to include a polyfill for Buffer, such as
+> [`buffer`](https://www.npmjs.com/package/buffer), so that the library can function properly in the browser.
 
 ## Supported banks
 The library was tested with the following banks, but it should work with any Ukrainian bank that supports the NBU QR
