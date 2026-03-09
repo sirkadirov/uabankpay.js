@@ -1,0 +1,6 @@
+{
+  "name": "@sirkadirov/uabankpay",
+  "version": "0.5.1",
+  "license": "MIT",
+  "exports": "./src/index.ts"
+}
