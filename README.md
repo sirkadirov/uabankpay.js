@@ -2,6 +2,7 @@
 [![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/sirkadirov/uabankpay.js)](https://github.com/sirkadirov/uabankpay.js/issues)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/sirkadirov/uabankpay.js/testing.yml)
 [![NPM Version](https://img.shields.io/npm/v/%40sirkadirov%2Fuabankpay)](https://www.npmjs.com/package/@sirkadirov/uabankpay)
+[![JSR](https://jsr.io/badges/@sirkadirov/uabankpay)](https://jsr.io/@sirkadirov/uabankpay)
 [![NPM Downloads](https://img.shields.io/npm/dy/%40sirkadirov%2Fuabankpay)](https://www.npmjs.com/package/@sirkadirov/uabankpay)
 
 **UABankPay** is a library for integrating Ukrainian direct (IBAN to IBAN) payments into your applications. It provides a
