@@ -1,6 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
-import { UaBankPayLinkRequest } from './UaBankPayLinkRequest.js';
-import UaBankPayProvider from './UaBankPayProvider.js';
+import { UaBankPayLinkRequest } from './UaBankPayLinkRequest';
+import UaBankPayProvider from './UaBankPayProvider';
 
 describe('Verify NBU QR links', () => {
     test('All functions of NBU QR + non-changeable', () => {
