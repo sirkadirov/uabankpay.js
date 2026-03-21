@@ -1,6 +1,6 @@
 {
   "name": "@sirkadirov/uabankpay",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Use specification of QR code for payments in Ukrainian banks (NBU QR) to generate direct links for payments.",
   "keywords": [
     "Ukraine",
