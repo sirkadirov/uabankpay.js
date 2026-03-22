@@ -1,6 +1,6 @@
 {
   "name": "@sirkadirov/uabankpay",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "description": "Use specification of QR code for payments in Ukrainian banks (NBU QR) to generate direct links for payments.",
   "keywords": [
     "Ukraine",
@@ -8,6 +8,18 @@
     "bank pay",
     "payments",
     "payment links"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
   ],
   "homepage": "https://github.com/sirkadirov/uabankpay.js",
   "bugs": {
@@ -17,19 +29,17 @@
     "type": "git",
     "url": "git+https://github.com/sirkadirov/uabankpay.js.git"
   },
+  "funding": [
+    "https://base.monobank.ua/6csDLxv9th8ka9"
+  ],
   "license": "MIT",
   "author": "Yurii Kadirov <contact@sirkadirov.com> (https://sirkadirov.com)",
-  "main": "dist/index.js",
   "scripts": {
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
     "build": "tsc",
     "test": "jest"
   },
-  "files": [
-    "dist",
-    "src"
-  ],
   "devDependencies": {
     "@jest/globals": "^30.2.0",
     "@types/node": "^25.3.3",

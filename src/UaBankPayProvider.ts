@@ -3,7 +3,7 @@ import { UaBankPayLinkRequest } from './UaBankPayLinkRequest.js';
 /**
  * UaBankPayProvider is a class that generates payment links for the National Bank of Ukraine (NBU) QR code format.
  */
-export default class UaBankPayProvider {
+export class UaBankPayProvider {
     /**
      * Generates a reusable payment link based on the provided UaBankPayLinkRequest.
      * The generated link is formatted according to the NBU QR code specifications.

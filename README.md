@@ -47,11 +47,12 @@ Those, who prefer using [Bun](https://bun.com/), can install the library using t
 bunx jsr add @sirkadirov/uabankpay
 ```
 
-Then, you can import the library and use it in your code. Here's a quick example of how to import the library
+Then, you can import the library and use it in your code. The package provides named exports:
+`UaBankPayProvider` and `UaBankPayLinkRequest`. Here's a quick example of how to import the library
 and generate a payment link, if you are writing TypeScript code:
 
 ```typescript
-import uabankpay, { type UaBankPayLinkRequest } from '@sirkadirov/uabankpay';
+import { UaBankPayProvider, type UaBankPayLinkRequest } from '@sirkadirov/uabankpay';
 import { v4 as uuidv4 } from 'uuid';
 
 // Generate a unique transaction ID for this payment request
