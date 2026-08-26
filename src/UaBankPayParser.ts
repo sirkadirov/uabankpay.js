@@ -20,7 +20,7 @@ export function parsePayLink(url: string): UaBankPayLinkRequest {
     if (!url.startsWith(NBU_QR_BASE_URL)) {
         throw new UaBankPayValidationError(
             'url',
-            `Payment link must start with ${NBU_QR_BASE_URL}`
+            `Платіжне посилання має починатися з ${NBU_QR_BASE_URL}`
         );
     }
 
@@ -33,7 +33,7 @@ export function parsePayLink(url: string): UaBankPayLinkRequest {
     } catch {
         throw new UaBankPayValidationError(
             'url',
-            'Payment link payload is not valid base64url-encoded data'
+            'Навантаження платіжного посилання не є дійсними даними base64url'
         );
     }
 
@@ -42,7 +42,7 @@ export function parsePayLink(url: string): UaBankPayLinkRequest {
     if (fields.length !== 17 || fields[0] !== 'BCD') {
         throw new UaBankPayValidationError(
             'url',
-            'Payment link payload does not contain a valid NBU QR data structure'
+            'Навантаження платіжного посилання не містить дійсної структури даних NBU QR'
         );
     }
 
@@ -66,14 +66,14 @@ export function parsePayLink(url: string): UaBankPayLinkRequest {
     if (specVersion !== '003') {
         throw new UaBankPayValidationError(
             'url',
-            `Unsupported NBU QR specification version: ${specVersion}. Only version 003 is supported`
+            `Непідтримувана версія специфікації NBU QR: ${specVersion}. Підтримується лише версія 003`
         );
     }
 
     if (characterSet !== '1') {
         throw new UaBankPayValidationError(
             'url',
-            `Unsupported character set: ${characterSet}. Only UTF-8 (1) is supported`
+            `Непідтримуване кодування даних: ${characterSet}. Підтримується лише UTF-8 (1)`
         );
     }
 

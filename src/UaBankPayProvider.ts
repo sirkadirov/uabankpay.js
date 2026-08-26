@@ -28,24 +28,24 @@ const AMOUNT_PATTERN = /^([A-Z]{3})?(\d{1,9})(?:\.(\d{1,2}))?$/;
 
 function validateReceiverName(receiverName: string): void {
     if (!receiverName) {
-        throw new UaBankPayValidationError('receiverName', 'Receiver name is required');
+        throw new UaBankPayValidationError('receiverName', 'Ім\'я отримувача є обов\'язковим');
     }
     if (receiverName.length > MAX_RECEIVER_NAME_LENGTH) {
         throw new UaBankPayValidationError(
             'receiverName',
-            `Receiver name exceeds maximum length of ${MAX_RECEIVER_NAME_LENGTH} characters`
+            `Довжина імені отримувача перевищує максимум ${MAX_RECEIVER_NAME_LENGTH} символів`
         );
     }
 }
 
 function validateReceiverIban(receiverIban: string): void {
     if (!receiverIban) {
-        throw new UaBankPayValidationError('receiverIban', 'Receiver IBAN is required');
+        throw new UaBankPayValidationError('receiverIban', 'Рахунок отримувача (IBAN) є обов\'язковим');
     }
     if (!IBAN_PATTERN.test(receiverIban)) {
         throw new UaBankPayValidationError(
             'receiverIban',
-            'Receiver IBAN is not a valid Ukrainian IBAN (should be `UA` followed by 27 digits)'
+            'IBAN отримувача не є дійсним українським IBAN (має бути `UA` + 27 цифр)'
         );
     }
 }
@@ -63,13 +63,13 @@ function validateAmount(amount: string | undefined): string {
     if (!match) {
         throw new UaBankPayValidationError(
             'amount',
-            'Amount must be a positive number with up to two decimal places, optionally prefixed ' +
-            'with the ISO 4217 currency code `UAH` (e.g. `UAH123.45`)'
+            'Сума має бути додатнім числом з до двох десяткових знаків, за бажанням ' +
+            'з префіксом валюти `UAH` (наприклад, `UAH123.45`)'
         );
     }
 
     if (parseFloat(match[3] ? `${match[2]}.${match[3]}` : match[2]) <= 0) {
-        throw new UaBankPayValidationError('amount', 'Amount must be greater than zero');
+        throw new UaBankPayValidationError('amount', 'Сума має бути більшою за нуль');
     }
 
     return `UAH${match[2]}${match[3] ? `.${match[3]}` : ''}`;
@@ -77,11 +77,11 @@ function validateAmount(amount: string | undefined): string {
 
 function validateReceiverCode(receiverCode: string | number | undefined): string {
     if (receiverCode === undefined || receiverCode === null || receiverCode === '') {
-        throw new UaBankPayValidationError('receiverCode', 'Receiver code is required');
+        throw new UaBankPayValidationError('receiverCode', 'Код отримувача є обов\'язковим');
     }
 
     if (typeof receiverCode === 'number' && !Number.isInteger(receiverCode)) {
-        throw new UaBankPayValidationError('receiverCode', 'Receiver code must be an integer');
+        throw new UaBankPayValidationError('receiverCode', 'Код отримувача має бути цілим числом');
     }
 
     const value = String(receiverCode);
@@ -89,7 +89,7 @@ function validateReceiverCode(receiverCode: string | number | undefined): string
     if (!RECEIVER_CODE_PATTERN.test(value)) {
         throw new UaBankPayValidationError(
             'receiverCode',
-            `Receiver code must be an 8-digit EDRPOU or 10-digit RNOKPP (up to ${MAX_RECEIVER_CODE_LENGTH} digits)`
+            `Код отримувача має бути 8-значним ЄДРПОУ або 10-значним РНОКПП (до ${MAX_RECEIVER_CODE_LENGTH} цифр)`
         );
     }
 
@@ -100,7 +100,7 @@ function validateOptionalField(name: 'destination' | 'display' | 'reference', va
     if (value !== undefined && value.length > maxLength) {
         throw new UaBankPayValidationError(
             name,
-            `Payment ${name} exceeds maximum length of ${maxLength} characters`
+            `Значення поля "${name}" перевищує максимум ${maxLength} символів`
         );
     }
 
