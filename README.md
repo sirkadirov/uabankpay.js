@@ -47,37 +47,90 @@ Those, who prefer using [Bun](https://bun.com/), can install the library using t
 bunx jsr add @sirkadirov/uabankpay
 ```
 
-Then, you can import the library and use it in your code. The package provides named exports:
-`UaBankPayProvider` and `UaBankPayLinkRequest`. Here's a quick example of how to import the library
+Then, you can import the library and use it in your code. The package provides the `generatePayLink` and `parsePayLink`
+functions along with the `UaBankPayLinkRequest` type. Here's a quick example of how to import the library
 and generate a payment link, if you are writing TypeScript code:
 
 ```typescript
-import { UaBankPayProvider, type UaBankPayLinkRequest } from '@sirkadirov/uabankpay';
-import { v4 as uuidv4 } from 'uuid';
+import { generatePayLink, type UaBankPayLinkRequest } from '@sirkadirov/uabankpay';
 
-// Generate a unique transaction ID for this payment request
-const transactionId: string = uuidv4();
-
-// Form a payment request object with the necessary details
+// Form a payment request object with the necessary details.
+// Only receiverName, receiverIban, amount and receiverCode are required;
+// the rest default to empty values / changeable behavior.
 const paymentRequest: UaBankPayLinkRequest = {
     receiverName: 'ГО "Верховний Порядок"',
     receiverIban: 'UA743077700000026001611157323',
     amount: 'UAH123.45',
     receiverCode: 43723254,
     destination: 'Добровільний внесок 12345',
-    reference: transactionId,
+    reference: 'AAABBBCCCDDDEEEFFF1234',
     display: 'Добровільний внесок',
     changeable: false
 };
 
 // Generate the payment link using the NBU QR specification
-const paymentLink: string = UaBankPayProvider.generatePayLink(paymentRequest);
+const paymentLink: string = generatePayLink(paymentRequest);
 console.log(paymentLink); // This link can be used directly or used in QR code generation
 ```
 
-> Note that the library uses `Buffer` for encoding the payment request data, which is a built-in class in `Node.js`.
-> If you are using this library in a browser environment, make sure to include a polyfill for Buffer, such as
-> [`buffer`](https://www.npmjs.com/package/buffer), so that the library can function properly in the browser.
+You can also decode an existing payment link back into a payment request object:
+
+```typescript
+import { parsePayLink } from '@sirkadirov/uabankpay';
+
+const request = parsePayLink('https://bank.gov.ua/qr/QkNECjAwMwo...');
+console.log(request.receiverIban); // UA743077700000026001611157323
+```
+
+> **Note:** the library runs anywhere `btoa`/`atob` are available - browsers, Deno, Bun, web workers and
+> Node.js 16+ - and does not require any polyfills.
+
+## API reference
+
+### `generatePayLink(request: UaBankPayLinkRequest): string`
+
+Generates an NBU QR payment link from the given payment request.
+
+### `parsePayLink(url: string): UaBankPayLinkRequest`
+
+Parses a payment link generated according to the NBU QR specification back into a payment request object.
+Passing the parsed object back to `generatePayLink` reproduces the original link.
+
+### `UaBankPayValidationError extends Error`
+
+Thrown by both functions when input is invalid. Its `field` property identifies the offending request field
+(or `'url'` when parsing fails), so consumers can catch and handle errors precisely:
+
+```typescript
+import { generatePayLink, UaBankPayValidationError } from '@sirkadirov/uabankpay';
+
+try {
+    generatePayLink({ /* ... */ });
+} catch (error) {
+    if (error instanceof UaBankPayValidationError) {
+        console.error(`Invalid field: ${error.field}`); // e.g. "Invalid field: receiverIban"
+    }
+}
+```
+
+### Payment request fields
+
+| Field | Type | Required | Constraints |
+|---|---|---|---|
+| `receiverName` | `string` | yes | Non-empty, up to 140 characters |
+| `receiverIban` | `string` | yes | Ukrainian IBAN: `UA` followed by 27 digits |
+| `amount` | `string` | yes | `UAH` prefix optional, positive number, up to two decimal places (`UAH123.45`, `123.45`, or empty string to let the payer choose) |
+| `receiverCode` | `string \| number` | yes | 8-digit EDRPOU or 10-digit RNOKPP; prefer strings to preserve leading zeros |
+| `destination` | `string` | no | Up to 420 characters |
+| `reference` | `string` | no | Up to 35 characters |
+| `display` | `string` | no | Up to 140 characters |
+| `changeable` | `boolean` | no | Whether the payer may edit fields before confirming (default `true`) |
+
+All limits follow the NBU QR version 3 specification (Постанова НБУ №97). Validation errors carry the failed
+field name in `error.field`.
+
+> `UaBankPayProvider.generatePayLink()` remains available as a deprecated alias for `generatePayLink()`
+> and will be removed in a future major release.
 
 ## Supported banks
 The library was tested with the following banks, but it should work with any Ukrainian bank that supports the NBU QR

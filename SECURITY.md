@@ -1,13 +1,19 @@
 # Security Policy
 
-UaBankPay.js is designed to run in a secure server environemnt, and doesn't take any user input,
+UaBankPay.js is designed to run in a secure server environment, and doesn't take any user input,
 so the attack surface is minimal. However, we take security seriously and encourage responsible
 disclosure of any vulnerabilities or security issues that may arise during library lifecycle.
 
-If you discover a security or other important issue with the libary, please report it to us
+If you discover a security or other important issue with the library, please report it to us
 immediately by emailing [contact@sirkadirov.com](mailto:contact@sirkadirov.com) with a detailed
 description of the vulnerability, steps to reproduce it, and any relevant information. We will
 investigate the issue promptly and work on a fix as soon as possible.
+
+## Supported versions
+
+Only the latest released version of the library receives security fixes. When reporting a
+vulnerability, please verify that it reproduces on the most recent version published to
+[npm](https://www.npmjs.com/package/@sirkadirov/uabankpay) or [JSR](https://jsr.io/@sirkadirov/uabankpay).
 
 ## Securing QR-codes
 When generating QR-codes for payments, it's important to ensure that the data being encoded is
@@ -36,7 +42,7 @@ accurate and secure, and to follow the best practices mentioned above when using
 **Malicious actors may attempt to create fraudulent QR codes that link to fake payment pages or APIs,
 so it's crucial to ensure that the data being encoded in the QR code is accurate and secure.**
 
-Ensuring that the QR code is not infected with mallicious content is a responsibility of the banking
+Ensuring that the QR code is not infected with malicious content is a responsibility of the banking
 institution that allows its customers to use QR codes for payments, and the users themselves. The
 library is designed to generate payment links that comply with the NBU QR specification only.
 
