@@ -457,6 +457,28 @@ input[type="checkbox"]:focus-visible {
     color: var(--status-text);
 }
 
+.qr-preview {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.qr-preview-heading {
+    margin: 0 0 8px;
+    font-size: 11px;
+}
+
+.qr-image {
+    width: 160px;
+    height: 160px;
+    padding: 4px;
+    background: var(--field-bg);
+    border: 2px solid;
+    border-color: var(--bevel-inner-light) var(--bevel-inner-dark) var(--bevel-inner-dark) var(--bevel-inner-light);
+    box-shadow: inset 1px 1px 0 var(--bevel-outer-dark);
+    image-rendering: pixelated;
+    image-rendering: crispEdges;
+}
+
 /* ==========================================================================
    Tables
    ========================================================================== */

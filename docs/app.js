@@ -31,6 +31,11 @@ const linkLength = $('link-length');
 const linkChangeable = $('link-changeable');
 const openBtn = $('open-btn');
 
+const qrPreview = $('qr-preview');
+const qrImage = $('qr-image');
+const qrDownload = $('qr-download');
+const qrStatus = $('qr-status');
+
 const parserInput = $('parser-input');
 const parserResultGroup = $('parser-result-group');
 const parserResultBody = $('parser-result-body');
@@ -40,6 +45,19 @@ const statusBarMessage = $('status-message');
 const dialogOverlay = $('dialog-overlay');
 const dialogMessage = $('dialog-message');
 const dialogOkBtn = $('dialog-ok-btn');
+
+// Maps the library field identifiers to Ukrainian labels. Used both for the
+// parsed-request table and for the error dialog so the user never sees code.
+const FIELD_LABELS = {
+    receiverName: 'Ім\'я отримувача',
+    receiverIban: 'IBAN отримувача',
+    amount: 'Сума',
+    receiverCode: 'Код отримувача',
+    destination: 'Призначення',
+    reference: 'Референс',
+    display: 'Текст для відображення',
+    url: 'Посилання'
+};
 
 let lastGeneratedLink = '';
 let lastDialogTrigger = null;
@@ -100,8 +118,12 @@ function setStatus(message, tone = 'info', temporary = false) {
     }
 
     if (temporary) {
-        statusResetTimer = setTimeout(() => setStatus('Ready'), 4000);
+        statusResetTimer = setTimeout(() => setStatus('Готово'), 4000);
     }
+}
+
+function labelFor(field) {
+    return FIELD_LABELS[field] ?? field;
 }
 
 function showDialog(message, trigger) {
@@ -156,27 +178,32 @@ form.addEventListener('submit', (event) => {
         lastGeneratedLink = link;
 
         generatedLink.textContent = link;
-        linkLength.textContent = `${link.length} characters`;
+        linkLength.textContent = `${link.length} символів`;
         linkChangeable.textContent = request.changeable
-            ? 'Fields editable by payer'
-            : 'All fields locked';
+            ? 'Поля дозволено редагувати платником'
+            : 'Усі поля заблоковані';
         openBtn.href = link;
         outputGroup.hidden = false;
 
-        setStatus('Payment link generated successfully.', 'success', true);
+        resetQrPreview();
+        renderQrCode(link).then(() => {
+            setStatus('Платіжне посилання та QR-код успішно створені.', 'success', true);
+        }, () => setStatus('Платіжне посилання створено. QR-код недоступний.', 'success', true));
     } catch (error) {
+        const field = error instanceof UaBankPayValidationError ? labelFor(error.field) : 'Запит';
         const detail = error instanceof UaBankPayValidationError
-            ? `Field "${error.field}": ${error.message}`
-            : 'Unexpected error while generating the payment link.';
+            ? `Поле «${field}»: ${error.message}`
+            : 'Неочікована помилка під час створення платіжного посилання.';
         showDialog(detail, $('generate-btn'));
-        setStatus('Generation failed.', 'error');
+        setStatus('Створення посилання не вдалося.', 'error');
     }
 });
 
 form.addEventListener('reset', () => {
     outputGroup.hidden = true;
+    qrPreview.hidden = true;
     lastGeneratedLink = '';
-    setStatus('Form cleared.');
+    setStatus('Форму очищено.');
 });
 
 $('sample-btn').addEventListener('click', () => {
@@ -188,7 +215,7 @@ $('sample-btn').addEventListener('click', () => {
     form.elements.reference.value = 'AAABBBCCCDDDEEEFFF1234';
     form.elements.display.value = 'Підтримайте нашу організацію!';
     form.elements.changeable.checked = false;
-    setStatus('Sample payee details loaded.');
+    setStatus('Завантажено приклад даних отримувача.');
 });
 
 $('copy-btn').addEventListener('click', async () => {
@@ -198,7 +225,7 @@ $('copy-btn').addEventListener('click', async () => {
 
     try {
         await navigator.clipboard.writeText(lastGeneratedLink);
-        setStatus('Link copied to clipboard.', 'success', true);
+        setStatus('Посилання скопійовано в буфер обміну.', 'success', true);
     } catch {
         // Clipboard API can be unavailable (insecure context); fall back to a hidden textarea.
         const scratch = document.createElement('textarea');
@@ -211,28 +238,67 @@ $('copy-btn').addEventListener('click', async () => {
 
         try {
             document.execCommand('copy');
-            setStatus('Link copied to clipboard.', 'success', true);
+            setStatus('Посилання скопійовано в буфер обміну.', 'success', true);
         } catch {
-            setStatus('Copying failed. Select the link text manually.', 'error');
+            setStatus('Копіювання не вдалося. Виділіть текст посилання вручну.', 'error');
         } finally {
             scratch.remove();
         }
     }
 });
 
+function resetQrPreview() {
+    qrImage.src = '';
+    qrDownload.href = '#';
+    qrDownload.hidden = true;
+    qrImage.hidden = true;
+    qrStatus.textContent = '';
+}
+
+let qrLibPromise = null;
+
+function loadQrCodeLib() {
+    if (qrLibPromise !== null) {
+        return qrLibPromise;
+    }
+
+    // Lazily load the `qrcode` library as an ESM module via esm.sh, so the rest
+    // of the page never blocks on it. If the network is unavailable the QR
+    // preview simply stays hidden and the payment link is still usable.
+    return (qrLibPromise = (async () => {
+        const module = await import('https://esm.sh/qrcode@1.5.4');
+        return module.default ?? module;
+    })());
+}
+
+async function renderQrCode(link) {
+    const QRCode = await loadQrCodeLib();
+    const dataUrl = await new Promise((resolve, reject) => {
+        QRCode.toDataURL(link, {
+            width: 256,
+            margin: 1,
+            errorCorrectionLevel: 'M',
+            color: { dark: '#000', light: '#fff' }
+        }, (error, url) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(url);
+            }
+        });
+    });
+
+    qrImage.src = dataUrl;
+    qrImage.hidden = false;
+    qrDownload.href = dataUrl;
+    qrDownload.hidden = false;
+    qrStatus.textContent = '';
+    qrPreview.hidden = false;
+}
+
 /* ==========================================================================
    Parser
    ========================================================================== */
-
-const FIELD_LABELS = [
-    ['receiverName', 'Receiver name'],
-    ['receiverIban', 'Receiver IBAN'],
-    ['amount', 'Amount'],
-    ['receiverCode', 'Receiver code'],
-    ['destination', 'Destination'],
-    ['reference', 'Reference'],
-    ['display', 'Display text']
-];
 
 function describeValue(value, emptyText) {
     const text = String(value ?? '').trim();
@@ -242,7 +308,8 @@ function describeValue(value, emptyText) {
 function renderParsedRequest(request, sourceUrl) {
     parserResultBody.innerHTML = '';
 
-    for (const [key, label] of FIELD_LABELS) {
+    for (const key of Object.keys(FIELD_LABELS)) {
+        const label = labelFor(key);
         const row = document.createElement('tr');
         const cellLabel = document.createElement('td');
         const cellValue = document.createElement('td');
@@ -250,7 +317,7 @@ function renderParsedRequest(request, sourceUrl) {
         cellLabel.textContent = label;
         cellValue.textContent = describeValue(
             request[key],
-            key === 'amount' ? '(payer chooses)' : '(not set)'
+            key === 'amount' ? '(вводить платник)' : '(не задано)'
         );
         row.append(cellLabel, cellValue);
         parserResultBody.append(row);
@@ -259,17 +326,20 @@ function renderParsedRequest(request, sourceUrl) {
     const changeableRow = document.createElement('tr');
     const changeableLabelCell = document.createElement('td');
     const changeableCell = document.createElement('td');
-    changeableLabelCell.textContent = 'Changeable';
-    changeableCell.textContent = request.changeable ? 'Yes - payer may edit fields' : 'No - all fields locked';
+    changeableLabelCell.textContent = 'Редагування';
+    changeableCell.textContent = request.changeable
+        ? 'Так — платник може редагувати поля'
+        : 'Ні — усі поля заблоковані';
     changeableRow.append(changeableLabelCell, changeableCell);
     parserResultBody.append(changeableRow);
 
     let note;
     if (generatePayLink(request) === sourceUrl) {
-        note = 'Round-trip verified: regenerating this request reproduces the exact link.';
+        note = 'Верифікація пройшла: повторне створення посилання відтворює його точно.';
     } else {
-        note = 'This link was produced by another NBU QR generator. The decoded request is shown above; '
-            + 'this library would encode it with its own defaults (XCT transaction type, SUPP/SUPP category).';
+        note = 'Це посилання створено іншим генератором NBU QR. Вище показаний розшифрований запит; '
+            + 'ця бібліотека кодує його з вліми налаштуваннями за замовчуванням '
+            + '(транзакція XCT, категорія SUPP/SUPP).';
     }
     roundtripNote.textContent = note;
 }
@@ -278,7 +348,7 @@ $('parse-btn').addEventListener('click', () => {
     const url = parserInput.value.trim();
 
     if (!url) {
-        setStatus('Paste a payment link first.', 'error');
+        setStatus('Спочатку вставте платіжне посилання.', 'error');
         parserInput.focus();
         return;
     }
@@ -287,27 +357,28 @@ $('parse-btn').addEventListener('click', () => {
         const request = parsePayLink(url);
         parserResultGroup.hidden = false;
         renderParsedRequest(request, url);
-        setStatus('Payment link parsed successfully.', 'success', true);
+        setStatus('Платіжне посилання успішно розшифровано.', 'success', true);
     } catch (error) {
+        const field = error instanceof UaBankPayValidationError ? labelFor(error.field) : 'Посилання';
         const detail = error instanceof UaBankPayValidationError
-            ? error.message
-            : 'Unexpected error while parsing the payment link.';
+            ? `Поле «${field}»: ${error.message}`
+            : 'Неочікована помилка під час розшифрування платіжного посилання.';
         parserResultGroup.hidden = true;
         showDialog(detail, $('parse-btn'));
-        setStatus('Parsing failed.', 'error');
+        setStatus('Розшифрування не вдалося.', 'error');
     }
 });
 
 $('paste-sample-btn').addEventListener('click', () => {
     if (!lastGeneratedLink) {
-        setStatus('Generate a link first, then decode it here.', 'error');
+        setStatus('Спочатку створіть посилання, потім розшифруйте його тут.', 'error');
         return;
     }
 
     parserInput.value = lastGeneratedLink;
     activateTab('parser');
     parserInput.focus();
-    setStatus('Generated link inserted. Press "Parse link" to decode it.');
+    setStatus('Посилання вставлено. Натисніть «Розшифрувати», щоб розшифрувати.');
 });
 
 /* ==========================================================================
@@ -317,13 +388,13 @@ $('paste-sample-btn').addEventListener('click', () => {
 $('about-base-url').textContent = NBU_QR_BASE_URL;
 
 const LIMIT_ROWS = [
-    ['Receiver name', `up to ${MAX_RECEIVER_NAME_LENGTH} characters`],
-    ['Receiver IBAN', 'exactly UA + 27 digits (29 characters)'],
-    ['Amount', 'UAH prefix optional, up to two decimal places'],
-    ['Receiver code', `8-digit EDRPOU or ${MAX_RECEIVER_CODE_LENGTH}-digit RNOKPP`],
-    ['Reference', `up to ${MAX_REFERENCE_LENGTH} characters`],
-    ['Destination', `up to ${MAX_DESTINATION_LENGTH} characters`],
-    ['Display text', `up to ${MAX_DISPLAY_LENGTH} characters`]
+    ['Ім\'я отримувача', `до ${MAX_RECEIVER_NAME_LENGTH} символів`],
+    ['IBAN отримувача', 'UA + 27 цифр (29 символів)'],
+    ['Сума', 'префікс UAH за бажанням, до двох десяткових знаків'],
+    ['Код отримувача', `8-значний ЄДРПОУ або ${MAX_RECEIVER_CODE_LENGTH}-значний РНОКПП`],
+    ['Референс', `до ${MAX_REFERENCE_LENGTH} символів`],
+    ['Призначення', `до ${MAX_DESTINATION_LENGTH} символів`],
+    ['Текст для відображення', `до ${MAX_DISPLAY_LENGTH} символів`]
 ];
 
 const limitsTableBody = $('limits-table-body');
