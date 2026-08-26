@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Generate NBU QR payment links for Ukrainian IBAN-to-IBAN payments right in your browser, powered by @sirkadirov/uabankpay.">
+    <title>UaBankPay 95</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div class="desktop">
+        <header class="desktop-header">
+            <p class="desktop-title">UaBankPay 95</p>
+            <p class="desktop-subtitle">Payment link generator for the NBU QR specification v3</p>
+        </header>
+
+        <main class="window program-window" id="program-window">
+            <div class="title-bar" id="title-bar">
+                <span class="title-bar-icon" aria-hidden="true">₴</span>
+                <h1 class="title-bar-text">UaBankPay - NBU QR Payment Links</h1>
+                <span class="title-bar-controls" aria-hidden="true">
+                    <span class="title-bar-button">_</span>
+                    <span class="title-bar-button">□</span>
+                    <span class="title-bar-button title-bar-button--close">✕</span>
+                </span>
+            </div>
+
+            <div class="menu-bar">
+                <span class="menu-item">File</span>
+                <span class="menu-item">Edit</span>
+                <span class="menu-item">View</span>
+                <span class="menu-item">Help</span>
+            </div>
+
+            <div class="tab-strip" role="tablist" aria-label="Program sections">
+                <button class="tab" role="tab" id="tab-generator" aria-controls="panel-generator" aria-selected="true" type="button">Generator</button>
+                <button class="tab" role="tab" id="tab-parser" aria-controls="panel-parser" aria-selected="false" type="button">Parser</button>
+                <button class="tab" role="tab" id="tab-about" aria-controls="panel-about" aria-selected="false" type="button">About</button>
+            </div>
+
+            <!-- ============ Generator panel ============ -->
+            <section class="tab-panel" role="tabpanel" id="panel-generator" aria-labelledby="tab-generator" tabindex="0">
+                <form id="generator-form" novalidate>
+                    <fieldset class="group-box">
+                        <legend>Payee details</legend>
+
+                        <div class="field-row">
+                            <label for="receiver-name">Receiver name</label>
+                            <input type="text" id="receiver-name" name="receiverName" maxlength="140"
+                                   autocomplete="off" spellcheck="false" required>
+                            <p class="field-hint" id="hint-receiver-name">Organization or person, up to 140 characters.</p>
+                        </div>
+
+                        <div class="field-row">
+                            <label for="receiver-iban">Receiver IBAN</label>
+                            <input type="text" id="receiver-iban" name="receiverIban" maxlength="29"
+                                   autocomplete="off" spellcheck="false" required
+                                   pattern="UA[0-9]{27}" aria-describedby="hint-receiver-iban">
+                            <p class="field-hint" id="hint-receiver-iban"><code>UA</code> followed by 27 digits.</p>
+                        </div>
+
+                        <div class="field-row field-row--split">
+                            <div class="field-cell">
+                                <label for="receiver-code">Receiver code</label>
+                                <input type="text" id="receiver-code" name="receiverCode" maxlength="10"
+                                       autocomplete="off" spellcheck="false" required
+                                       inputmode="numeric" pattern="[0-9]{8}([0-9]{2})?" aria-describedby="hint-receiver-code">
+                                <p class="field-hint" id="hint-receiver-code">EDRPOU (8) or RNOKPP (10) digits.</p>
+                            </div>
+                            <div class="field-cell">
+                                <label for="amount">Amount</label>
+                                <input type="text" id="amount" name="amount" maxlength="13"
+                                       autocomplete="off" spellcheck="false"
+                                       placeholder="UAH123.45" aria-describedby="hint-amount">
+                                <p class="field-hint" id="hint-amount">Optional. Empty lets the payer choose.</p>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="group-box">
+                        <legend>Payment details</legend>
+
+                        <div class="field-row">
+                            <label for="destination">Destination</label>
+                            <textarea id="destination" name="destination" rows="3" maxlength="420"
+                                      spellcheck="false" aria-describedby="hint-destination"></textarea>
+                            <p class="field-hint" id="hint-destination">Payment purpose, up to 420 characters. Optional.</p>
+                        </div>
+
+                        <div class="field-row field-row--split">
+                            <div class="field-cell">
+                                <label for="reference">Reference</label>
+                                <input type="text" id="reference" name="reference" maxlength="35"
+                                       autocomplete="off" spellcheck="false" aria-describedby="hint-reference">
+                                <p class="field-hint" id="hint-reference">Up to 35 characters. Optional.</p>
+                            </div>
+                            <div class="field-cell">
+                                <label for="display">Display text</label>
+                                <input type="text" id="display" name="display" maxlength="140"
+                                       autocomplete="off" spellcheck="false" aria-describedby="hint-display">
+                                <p class="field-hint" id="hint-display">Shown by banking apps. Optional.</p>
+                            </div>
+                        </div>
+
+                        <div class="checkbox-row">
+                            <input type="checkbox" id="changeable" name="changeable" checked>
+                            <label for="changeable">Let the payer edit fields before confirming</label>
+                        </div>
+                    </fieldset>
+
+                    <div class="button-row">
+                        <button type="submit" class="win95-button win95-button--primary" id="generate-btn">Generate pay link</button>
+                        <button type="button" class="win95-button" id="sample-btn">Load sample data</button>
+                        <button type="reset" class="win95-button" id="clear-btn">Clear</button>
+                    </div>
+                </form>
+
+                <div class="group-box output-group" id="output-group" hidden>
+                    <legend class="visually-hidden">Generated payment link</legend>
+                    <p class="output-heading" id="output-label">Generated payment link</p>
+                    <div class="output-link-row">
+                        <output class="output-link" id="generated-link" for="generator-form" aria-live="polite"></output>
+                    </div>
+                    <div class="output-meta">
+                        <span id="link-length"></span>
+                        <span id="link-changeable"></span>
+                    </div>
+                    <div class="button-row">
+                        <button type="button" class="win95-button" id="copy-btn">Copy link</button>
+                        <a class="win95-button win95-button--link" id="open-btn" target="_blank" rel="noopener noreferrer">Open link</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ Parser panel ============ -->
+            <section class="tab-panel" role="tabpanel" id="panel-parser" aria-labelledby="tab-parser" tabindex="0" hidden>
+                <div class="group-box">
+                    <legend>Payment link</legend>
+                    <div class="field-row">
+                        <label for="parser-input">Paste a link to decode</label>
+                        <textarea id="parser-input" rows="3" spellcheck="false"
+                                  placeholder="https://bank.gov.ua/qr/QkNECjAwMwo..."></textarea>
+                    </div>
+                    <div class="button-row">
+                        <button type="button" class="win95-button win95-button--primary" id="parse-btn">Parse link</button>
+                        <button type="button" class="win95-button" id="paste-sample-btn">Use generated link</button>
+                    </div>
+                </div>
+
+                <div class="group-box parser-result-group" id="parser-result-group" hidden>
+                    <p class="output-heading">Decoded request</p>
+                    <table class="properties-table">
+                        <tbody id="parser-result-body"></tbody>
+                    </table>
+                    <p class="field-hint" id="roundtrip-note"></p>
+                </div>
+            </section>
+
+            <!-- ============ About panel ============ -->
+            <section class="tab-panel" role="tabpanel" id="panel-about" aria-labelledby="tab-about" tabindex="0" hidden>
+                <div class="about-layout">
+                    <div class="about-logo" aria-hidden="true">₴</div>
+                    <div class="about-text">
+                        <h2>UaBankPay 95</h2>
+                        <p>Demo application for <strong>@sirkadirov/uabankpay</strong>, running fully in your browser.
+                            Nothing you type here leaves this page.</p>
+                        <dl class="about-facts">
+                            <dt>Specification</dt><dd>NBU QR version 3 (<code>003</code>)</dd>
+                            <dt>Endpoint</dt><dd><code id="about-base-url"></code></dd>
+                            <dt>Runtime</dt><dd>Web-standard <code>btoa</code>/<code>atob</code> encoding, no polyfills</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="group-box">
+                    <legend>Field limits from the specification</legend>
+                    <table class="properties-table">
+                        <thead>
+                        <tr><th scope="col">Field</th><th scope="col">Limit</th></tr>
+                        </thead>
+                        <tbody id="limits-table-body"></tbody>
+                    </table>
+                </div>
+
+                <p class="about-links">
+                    <a href="https://github.com/sirkadirov/uabankpay.js" target="_blank" rel="noopener noreferrer">GitHub repository</a>
+                    &middot;
+                    <a href="https://www.npmjs.com/package/@sirkadirov/uabankpay" target="_blank" rel="noopener noreferrer">npm package</a>
+                    &middot;
+                    <a href="https://jsr.io/@sirkadirov/uabankpay" target="_blank" rel="noopener noreferrer">JSR package</a>
+                </p>
+            </section>
+
+            <div class="status-bar">
+                <span class="status-cell status-cell--grow" id="status-message">Ready</span>
+                <span class="status-cell" id="status-mode">NBU QR v3</span>
+            </div>
+        </main>
+    </div>
+
+    <!-- ============ Modal dialog ============ -->
+    <div class="dialog-overlay" id="dialog-overlay" hidden>
+        <div class="window dialog-window" role="alertdialog" aria-modal="true"
+             aria-labelledby="dialog-title" aria-describedby="dialog-message">
+            <div class="title-bar title-bar--active">
+                <h2 class="title-bar-text" id="dialog-title">Validation error</h2>
+                <span class="title-bar-controls" aria-hidden="true">
+                    <span class="title-bar-button title-bar-button--close">✕</span>
+                </span>
+            </div>
+            <div class="dialog-body">
+                <span class="dialog-icon" aria-hidden="true">✕</span>
+                <p id="dialog-message"></p>
+            </div>
+            <div class="dialog-actions">
+                <button type="button" class="win95-button win95-button--primary" id="dialog-ok-btn">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="taskbar">
+        <button type="button" class="taskbar-start" aria-label="About UaBankPay 95">
+            <span aria-hidden="true">₴</span> Start
+        </button>
+        <div class="taskbar-divider" aria-hidden="true"></div>
+        <button type="button" class="taskbar-task taskbar-task--active" id="taskbar-program" aria-pressed="true">
+            <span aria-hidden="true">₴</span> UaBankPay - NBU QR Payment...
+        </button>
+        <div class="taskbar-tray">
+            <span id="taskbar-clock" role="timer"></span>
+        </div>
+    </footer>
+
+    <script type="module" src="./app.js"></script>
+</body>
+</html>

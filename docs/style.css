@@ -1,0 +1,760 @@
+/* ==========================================================================
+   UaBankPay 95 - Windows 95 design system
+   ========================================================================== */
+
+:root {
+    /* Desktop and window surfaces */
+    --desktop-teal: #008080;
+    --surface: #c0c0c0;
+    --surface-dark: #808080;
+    --surface-light: #dfdfdf;
+    --white: #ffffff;
+    --black: #000000;
+
+    /* Title bar */
+    --title-active-from: #000080;
+    --title-active-to: #1084d0;
+    --title-inactive-bg: #808080;
+
+    /* Content */
+    --field-bg: #ffffff;
+    --status-text: #222222;
+    --error-red: #a01010;
+    --success-green: #007000;
+
+    /* Bevel edges */
+    --bevel-outer-light: var(--white);
+    --bevel-outer-dark: var(--black);
+    --bevel-inner-light: var(--surface-light);
+    --bevel-inner-dark: var(--surface-dark);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--desktop-teal);
+    color: var(--black);
+    font-family: "Pixelated MS Sans Serif", "MS Sans Serif", Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+/* ==========================================================================
+   Desktop backdrop
+   ========================================================================== */
+
+.desktop {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    padding: 32px 16px calc(48px + 32px); /* leaves room for the fixed taskbar */
+}
+
+.desktop-header {
+    text-align: center;
+    max-width: 640px;
+}
+
+.desktop-title {
+    margin: 0;
+    font-size: 28px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    color: var(--white);
+    text-shadow: 2px 2px 0 var(--title-active-from);
+}
+
+.desktop-subtitle {
+    margin: 8px 0 0;
+    color: var(--white);
+    text-shadow: 1px 1px 0 var(--title-active-from);
+}
+
+/* ==========================================================================
+   Windows, title bars, chrome
+   ========================================================================== */
+
+.window {
+    background: var(--surface);
+    border: 2px solid;
+    border-color: var(--bevel-outer-light) var(--bevel-outer-dark) var(--bevel-outer-dark) var(--bevel-outer-light);
+    box-shadow:
+        inset -1px -1px 0 var(--bevel-inner-dark),
+        inset 1px 1px 0 var(--bevel-inner-light),
+        3px 3px 0 rgba(0, 0, 0, 0.35);
+    padding: 3px;
+}
+
+.program-window {
+    width: min(720px, 100%);
+}
+
+.title-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 4px;
+    background: linear-gradient(90deg, var(--title-active-from), var(--title-active-to));
+    color: var(--white);
+    user-select: none;
+}
+
+.title-bar-icon {
+    font-weight: bold;
+    line-height: 1;
+    padding: 0 2px;
+}
+
+.title-bar-text {
+    margin: 0;
+    flex: 1;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.title-bar-controls {
+    display: inline-flex;
+    gap: 2px;
+}
+
+.title-bar-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 16px;
+    background: var(--surface);
+    color: var(--black);
+    font-size: 9px;
+    font-family: inherit;
+    font-weight: bold;
+    line-height: 1;
+    border: 1px solid;
+    border-color: var(--bevel-outer-light) var(--bevel-outer-dark) var(--bevel-outer-dark) var(--bevel-outer-light);
+    box-shadow: inset -1px -1px 0 var(--bevel-inner-dark), inset 1px 1px 0 var(--bevel-inner-light);
+    cursor: default;
+}
+
+.title-bar-button--close {
+    font-size: 8px;
+}
+
+.menu-bar {
+    display: flex;
+    gap: 2px;
+    padding: 2px 1px;
+    user-select: none;
+}
+
+.menu-item {
+    padding: 2px 8px;
+}
+
+.menu-item:hover {
+    background: var(--title-active-from);
+    color: var(--white);
+}
+
+/* ==========================================================================
+   Tabs
+   ========================================================================== */
+
+.tab-strip {
+    display: flex;
+    gap: 2px;
+    padding: 6px 3px 0;
+    position: relative;
+    z-index: 1;
+    margin-bottom: -2px;
+}
+
+.tab {
+    appearance: none;
+    background: var(--surface);
+    color: var(--black);
+    font: inherit;
+    padding: 4px 14px 5px;
+    cursor: pointer;
+    border: 2px solid;
+    border-color: var(--bevel-outer-light) var(--bevel-outer-dark) var(--surface) var(--bevel-outer-light);
+    border-radius: 6px 6px 0 0;
+    box-shadow: inset 1px 1px 0 var(--bevel-inner-light);
+    position: relative;
+    top: 2px;
+}
+
+.tab[aria-selected="true"] {
+    top: 0;
+    font-weight: bold;
+    padding-top: 6px;
+    padding-bottom: 7px;
+    z-index: 2;
+    /* cover the panel's top border under the active tab */
+    border-bottom-color: var(--surface);
+    margin-bottom: -3px;
+}
+
+.tab-panel {
+    border: 2px solid;
+    border-color: var(--bevel-inner-light) var(--bevel-inner-dark) var(--bevel-inner-dark) var(--bevel-inner-light);
+    outline: 2px solid;
+    outline-color: var(--bevel-outer-dark) var(--bevel-outer-dark) var(--bevel-outer-dark) var(--bevel-outer-dark);
+    outline-offset: -4px;
+    padding: 14px;
+    background: var(--surface);
+}
+
+.tab-panel:focus-visible {
+    outline-style: double;
+}
+
+/* ==========================================================================
+   Group boxes and fields
+   ========================================================================== */
+
+.group-box {
+    border: 2px solid;
+    border-color: var(--bevel-inner-dark) var(--bevel-inner-light) var(--bevel-inner-light) var(--bevel-inner-dark);
+    box-shadow: 1px 1px 0 var(--bevel-outer-dark), -1px -1px 0 var(--bevel-outer-light);
+    margin: 0 0 14px;
+    padding: 10px 12px;
+    min-width: 0;
+}
+
+legend,
+.output-heading {
+    font-weight: bold;
+    padding: 0 4px;
+}
+
+.field-row {
+    margin-bottom: 10px;
+}
+
+.field-row:last-child {
+    margin-bottom: 0;
+}
+
+.field-row--split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.field-cell {
+    min-width: 0;
+}
+
+label {
+    display: block;
+    margin-bottom: 3px;
+    font-weight: normal;
+}
+
+input[type="text"],
+textarea,
+output {
+    display: block;
+    width: 100%;
+    padding: 3px 5px;
+    font: inherit;
+    color: var(--black);
+    background: var(--field-bg);
+    border: 2px solid;
+    border-color: var(--bevel-inner-dark) var(--bevel-inner-light) var(--bevel-inner-light) var(--bevel-inner-dark);
+    box-shadow: 1px 1px 0 var(--bevel-outer-dark);
+    border-radius: 0;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 56px;
+}
+
+input[type="text"]:focus-visible,
+textarea:focus-visible {
+    outline: 2px dotted var(--black);
+    outline-offset: -5px;
+}
+
+input:user-invalid {
+    border-color: var(--error-red);
+}
+
+.field-hint {
+    margin: 3px 0 0;
+    font-size: 11px;
+    color: var(--status-text);
+}
+
+.field-hint code,
+.about-facts code {
+    font-family: "Courier New", monospace;
+    font-size: 11px;
+}
+
+.checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.checkbox-row label {
+    margin: 0;
+}
+
+input[type="checkbox"] {
+    appearance: none;
+    width: 15px;
+    height: 15px;
+    margin: 0;
+    flex-shrink: 0;
+    background: var(--field-bg);
+    border: 2px solid;
+    border-color: var(--bevel-inner-dark) var(--bevel-inner-light) var(--bevel-inner-light) var(--bevel-inner-dark);
+    box-shadow: 1px 1px 0 var(--bevel-outer-dark);
+    display: inline-grid;
+    place-content: center;
+    cursor: pointer;
+}
+
+input[type="checkbox"]::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    transform: scale(0);
+    background:
+        linear-gradient(135deg, transparent 42%, var(--black) 42%, var(--black) 58%, transparent 58%),
+        linear-gradient(45deg, transparent 42%, var(--black) 42%, var(--black) 58%, transparent 58%);
+    background-size: 100% 100%;
+    clip-path: polygon(14% 44%, 0 62%, 40% 100%, 100% 18%, 84% 4%, 38% 70%);
+}
+
+input[type="checkbox"]:checked::before {
+    transform: scale(1);
+}
+
+input[type="checkbox"]:focus-visible {
+    outline: 2px dotted var(--black);
+    outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+
+.win95-button {
+    appearance: none;
+    font: inherit;
+    color: var(--black);
+    background: var(--surface);
+    padding: 5px 14px;
+    min-height: 26px;
+    cursor: pointer;
+    border: 2px solid;
+    border-color: var(--bevel-outer-light) var(--bevel-outer-dark) var(--bevel-outer-dark) var(--bevel-outer-light);
+    box-shadow: inset -1px -1px 0 var(--bevel-inner-dark), inset 1px 1px 0 var(--bevel-inner-light);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.win95-button:hover {
+    box-shadow:
+        inset -1px -1px 0 var(--bevel-inner-dark),
+        inset 1px 1px 0 var(--bevel-inner-light),
+        inset 0 0 0 60px rgba(255, 255, 255, 0.35);
+}
+
+.win95-button:active {
+    border-color: var(--bevel-outer-dark) var(--bevel-outer-light) var(--bevel-outer-light) var(--bevel-outer-dark);
+    box-shadow: inset 1px 1px 0 var(--bevel-inner-dark);
+    padding: 6px 13px 4px 15px;
+}
+
+.win95-button:focus-visible {
+    outline: 2px dotted var(--black);
+    outline-offset: -6px;
+}
+
+.win95-button--primary {
+    font-weight: bold;
+    box-shadow:
+        inset -1px -1px 0 var(--bevel-inner-dark),
+        inset 1px 1px 0 var(--bevel-inner-light),
+        inset 2px 2px 0 var(--bevel-outer-light);
+}
+
+.win95-button--link {
+    color: var(--black);
+}
+
+.button-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+/* ==========================================================================
+   Output area
+   ========================================================================== */
+
+.output-group {
+    margin-top: 4px;
+}
+
+.output-link-row {
+    background: var(--field-bg);
+    border: 2px solid;
+    border-color: var(--bevel-inner-dark) var(--bevel-inner-light) var(--bevel-inner-light) var(--bevel-inner-dark);
+    box-shadow: 1px 1px 0 var(--bevel-outer-dark);
+    padding: 6px 8px;
+    word-break: break-all;
+}
+
+.output-link {
+    font-family: "Courier New", monospace;
+    font-size: 11px;
+    white-space: pre-wrap;
+}
+
+.output-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--status-text);
+}
+
+/* ==========================================================================
+   Tables
+   ========================================================================== */
+
+.properties-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--field-bg);
+    border: 2px solid;
+    border-color: var(--bevel-inner-dark) var(--bevel-inner-light) var(--bevel-inner-light) var(--bevel-inner-dark);
+    font-size: 11px;
+}
+
+.properties-table th,
+.properties-table td {
+    text-align: left;
+    padding: 4px 8px;
+    vertical-align: top;
+    word-break: break-word;
+}
+
+.properties-table tbody tr:nth-child(odd) {
+    background: #efefef;
+}
+
+.properties-table th {
+    background: var(--surface);
+    font-weight: bold;
+    border-bottom: 1px solid var(--surface-dark);
+}
+
+.properties-table td:first-child {
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+#roundtrip-note:not(:empty) {
+    margin-top: 8px;
+}
+
+/* ==========================================================================
+   About panel
+   ========================================================================== */
+
+.about-layout {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.about-logo {
+    flex-shrink: 0;
+    width: 72px;
+    height: 72px;
+    display: grid;
+    place-content: center;
+    font-size: 40px;
+    font-weight: bold;
+    color: var(--white);
+    background: linear-gradient(135deg, var(--title-active-to), var(--title-active-from));
+    border: 2px solid;
+    border-color: var(--bevel-outer-light) var(--bevel-outer-dark) var(--bevel-outer-dark) var(--bevel-outer-light);
+    box-shadow: inset -2px -2px 0 rgba(0, 0, 0, 0.25), inset 2px 2px 0 rgba(255, 255, 255, 0.35);
+    text-shadow: 2px 2px 0 var(--title-active-from);
+}
+
+.about-text h2 {
+    margin: 0 0 6px;
+    font-size: 16px;
+}
+
+.about-text p {
+    margin: 0 0 10px;
+}
+
+.about-facts {
+    margin: 0;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 2px 12px;
+}
+
+.about-facts dt {
+    font-weight: bold;
+}
+
+.about-facts dd {
+    margin: 0;
+    word-break: break-all;
+}
+
+.about-links {
+    margin: 14px 0 0;
+}
+
+/* ==========================================================================
+   Status bar
+   ========================================================================== */
+
+.status-bar {
+    display: flex;
+    gap: 3px;
+    margin-top: 10px;
+}
+
+.status-cell {
+    border: 2px solid;
+    border-color: var(--bevel-inner-dark) var(--bevel-inner-light) var(--bevel-inner-light) var(--bevel-inner-dark);
+    box-shadow: 1px 1px 0 var(--bevel-outer-dark);
+    padding: 2px 8px;
+    font-size: 11px;
+    color: var(--status-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.status-cell--grow {
+    flex: 1;
+    min-width: 0;
+}
+
+.status-message--error {
+    color: var(--error-red);
+    font-weight: bold;
+}
+
+.status-message--success {
+    color: var(--success-green);
+    font-weight: bold;
+}
+
+/* ==========================================================================
+   Modal dialog
+   ========================================================================== */
+
+.dialog-overlay {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    background: rgba(0, 0, 0, 0.25);
+    padding: 16px;
+    z-index: 50;
+}
+
+.dialog-overlay[hidden] {
+    display: none;
+}
+
+.dialog-window {
+    width: min(420px, 100%);
+}
+
+.dialog-body {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 16px 12px 12px;
+}
+
+.dialog-body p {
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.dialog-icon {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-content: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--white);
+    background: var(--error-red);
+    border: 2px solid;
+    border-color: var(--bevel-inner-light) var(--bevel-inner-dark) var(--bevel-inner-dark) var(--bevel-inner-light);
+    clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+.dialog-actions {
+    display: flex;
+    justify-content: center;
+    padding: 4px 12px 12px;
+}
+
+/* ==========================================================================
+   Taskbar
+   ========================================================================== */
+
+.taskbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: stretch;
+    gap: 4px;
+    padding: 3px 4px;
+    background: var(--surface);
+    border-top: 2px solid;
+    border-color: var(--bevel-outer-light) var(--bevel-outer-dark) var(--bevel-outer-dark) var(--bevel-outer-light);
+    box-shadow: inset 0 1px 0 var(--bevel-inner-light);
+    z-index: 40;
+}
+
+.taskbar-start,
+.taskbar-task {
+    appearance: none;
+    font: inherit;
+    font-weight: bold;
+    color: var(--black);
+    background: var(--surface);
+    border: 2px solid;
+    border-color: var(--bevel-outer-light) var(--bevel-outer-dark) var(--bevel-outer-dark) var(--bevel-outer-light);
+    box-shadow: inset -1px -1px 0 var(--bevel-inner-dark), inset 1px 1px 0 var(--bevel-inner-light);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    min-height: 30px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.taskbar-start:hover,
+.taskbar-task:hover {
+    filter: brightness(1.06);
+}
+
+.taskbar-task {
+    font-weight: normal;
+    flex: 1;
+    min-width: 0;
+    max-width: 320px;
+    justify-content: flex-start;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.taskbar-task--active {
+    background-image:
+        repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.5) 0 1px, transparent 1px 2px);
+    font-weight: bold;
+}
+
+.taskbar-divider {
+    border-left: 2px solid;
+    border-color: var(--bevel-inner-dark) var(--bevel-inner-light);
+    margin: 2px 2px;
+}
+
+.taskbar-tray {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 3px 10px;
+    border: 2px solid;
+    border-color: var(--bevel-inner-dark) var(--bevel-inner-light) var(--bevel-inner-light) var(--bevel-inner-dark);
+    font-size: 11px;
+    min-height: 30px;
+}
+
+/* ==========================================================================
+   Responsive behavior
+   ========================================================================== */
+
+@media (max-width: 560px) {
+    .desktop {
+        padding: 16px 8px calc(44px + 16px);
+    }
+
+    .program-window {
+        width: 100%;
+    }
+
+    .tab-panel {
+        padding: 10px;
+    }
+
+    .field-row--split {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .about-layout {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .taskbar-task {
+        max-width: none;
+    }
+
+    .button-row .win95-button {
+        flex: 1 1 auto;
+    }
+}
