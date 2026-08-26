@@ -9,8 +9,10 @@
 simple and efficient way to generate payment links and handle other related stuff in the future.
 
 > **Note:** library uses NBU QR version 3 specification, which is the latest version as of the moment of writing this README
-(March 2026). If you are looking for a library that implements the older version of the specification, please check out
+(August 2026). If you are looking for a library that implements the older version of the specification, please check out
 other projects or contribute to this one by adding support for the older version.
+
+<kbd> <br> [Try out interactive demo](https://sirkadirov.github.io/uabankpay.js/) <br> </kbd>
 
 ## Legal basis
 The library is based on the [NBU QR](https://bank.gov.ua/ua/payments/use-qr) specification, which defines the
@@ -135,14 +137,26 @@ field name in `error.field`.
 ## Supported banks
 The library was tested with the following banks, but it should work with any Ukrainian bank that supports the NBU QR
 specification (see [https://bank.gov.ua/ua/qr](https://bank.gov.ua/ua/qr) for the full list of supported banks):
-- Monobank
-- Abank
-- Pivdenny Bank
-- KredoBank
-- PrivatBank
-- Vlasny Rakhunok
-- Raiffeisen Bank
-- NovaPay
+
+| Bank                  | Last tested by               | Compliance | Notes |
+|-----------------------|------------------------------|------------|-------|
+| Accordbank            | 2026-08-26 by @sirkadirov    | Full       |       |
+| abank                 | 2026-08-26 by @sirkadirov    | Full       |       |
+| alliance bank         | 2026-08-26 by @sirkadirov    | Full       |       |
+| BVR (Власний Рахунок) | 2026-08-26 by @sirkadirov    | Full       |       |
+| CA+ (Credit Agricole) | 2026-08-26 by @i_klmts       | Full       |       |
+| FUIB (ПУМБ)           | 2026-08-26 by @sirkadirov    | Full       |       |
+| KredoBank             | 2026-08-26 by @sirkadirov    | Full       |       |
+| monobank              | 2026-08-26 by @sirkadirov    | Full       |       |
+| NovaPay               | 2026-08-26 by @sirkadirov    | Full       |       |
+| OTP Bank              | 2026-08-26 by @i_klmts       | Full       |       |
+| Pivdennyi             | 2026-08-26 by @sirkadirov    | Partial    | Always shows as noninstant payment |
+| PrivatBank            | 2026-08-26 by @sirkadirov    | Full       |       |
+| Procredit Bank        | 2026-08-26 by @i_klmts       | Partial    | Always allows editing |
+| Sense bank            | 2026-08-26 by @sirkadirov    | Full       |       |
+| Ukrgasbank            | 2026-08-26 by @i_klmts       | Error      | `QR code is invalid` error |
+| VST Bank              | 2026-08-26 by @i_klmts       | Full       |       |
+| Winbank (Piraeus)     | 2026-08-26 by @sirkadirov    | Full       |       |
 
 > If you encounter any issues with a specific bank or if you want to update support status for a bank that is not
 > listed here, please open an issue or submit a pull request with such changes.
