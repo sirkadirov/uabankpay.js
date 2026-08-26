@@ -138,25 +138,26 @@ field name in `error.field`.
 The library was tested with the following banks, but it should work with any Ukrainian bank that supports the NBU QR
 specification (see [https://bank.gov.ua/ua/qr](https://bank.gov.ua/ua/qr) for the full list of supported banks):
 
-| Bank                  | Last tested by               | Compliance | Notes |
-|-----------------------|------------------------------|------------|-------|
-| Accordbank            | 2026-08-26 by @sirkadirov    | Full       |       |
-| abank                 | 2026-08-26 by @sirkadirov    | Full       |       |
-| alliance bank         | 2026-08-26 by @sirkadirov    | Full       |       |
-| BVR (Власний Рахунок) | 2026-08-26 by @sirkadirov    | Full       |       |
-| CA+ (Credit Agricole) | 2026-08-26 by @i_klmts       | Full       |       |
-| FUIB (ПУМБ)           | 2026-08-26 by @sirkadirov    | Full       |       |
-| KredoBank             | 2026-08-26 by @sirkadirov    | Full       |       |
-| monobank              | 2026-08-26 by @sirkadirov    | Full       |       |
-| NovaPay               | 2026-08-26 by @sirkadirov    | Full       |       |
-| OTP Bank              | 2026-08-26 by @i_klmts       | Full       |       |
-| Pivdennyi             | 2026-08-26 by @sirkadirov    | Partial    | Always shows as noninstant payment |
-| PrivatBank            | 2026-08-26 by @sirkadirov    | Full       |       |
-| Procredit Bank        | 2026-08-26 by @i_klmts       | Partial    | Always allows editing |
-| Sense bank            | 2026-08-26 by @sirkadirov    | Full       |       |
-| Ukrgasbank            | 2026-08-26 by @i_klmts       | Error      | `QR code is invalid` error |
-| VST Bank              | 2026-08-26 by @i_klmts       | Full       |       |
-| Winbank (Piraeus)     | 2026-08-26 by @sirkadirov    | Full       |       |
+| Bank                  | Last tested by                                                       | Compliance | Notes |
+|-----------------------|----------------------------------------------------------------------|------------|-------|
+| Accordbank            | 2026-08-26 by [@sirkadirov](https://github.com/sirkadirov)           | Full       |       |
+| abank                 | 2026-08-26 by [@sirkadirov](https://github.com/sirkadirov)           | Full       |       |
+| alliance bank         | 2026-08-26 by [@sirkadirov](https://github.com/sirkadirov)           | Full       |       |
+| BVR (Власний Рахунок) | 2026-08-26 by [@sirkadirov](https://github.com/sirkadirov)           | Full       |       |
+| CA+ (Credit Agricole) | 2026-08-26 by [@i_klmts](https://t.me/i_klmts)                       | Full       |       |
+| FUIB (ПУМБ)           | 2026-08-26 by [@sirkadirov](https://github.com/sirkadirov)           | Full       |       |
+| KredoBank             | 2026-08-26 by [@sirkadirov](https://github.com/sirkadirov)           | Full       |       |
+| monobank              | 2026-08-26 by [@sirkadirov](https://github.com/sirkadirov)           | Full       |       |
+| NovaPay               | 2026-08-26 by [@sirkadirov](https://github.com/sirkadirov)           | Full       |       |
+| OTP Bank              | 2026-08-26 by [@i_klmts](https://t.me/i_klmts)                       | Full       |       |
+| Pivdennyi             | 2026-08-26 by [@sirkadirov](https://github.com/sirkadirov)           | Partial    | Always shows as noninstant payment |
+| PrivatBank            | 2026-08-26 by [@sirkadirov](https://github.com/sirkadirov)           | Full       |       |
+| Procredit Bank        | 2026-08-26 by [@i_klmts](https://t.me/i_klmts)                       | Partial    | Always allows editing |
+| Sense bank            | 2026-08-26 by [@sirkadirov](https://github.com/sirkadirov)           | Full       |       |
+| Ukrgasbank            | 2026-08-26 by [@i_klmts](https://t.me/i_klmts)                       | Error      | `QR code is invalid` error |
+| Ukrsibbank            | 2026-08-26 by [@natashalysakova](https://github.com/natashalysakova) | Error      | `QR code is invalid` error |
+| VST Bank              | 2026-08-26 by [@i_klmts](https://t.me/i_klmts)                       | Full       |       |
+| Winbank (Piraeus)     | 2026-08-26 by [@sirkadirov](https://github.com/sirkadirov)           | Full       |       |
 
 > If you encounter any issues with a specific bank or if you want to update support status for a bank that is not
 > listed here, please open an issue or submit a pull request with such changes.
