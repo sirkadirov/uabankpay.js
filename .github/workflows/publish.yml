@@ -42,7 +42,7 @@ jobs:
         run: npm test
 
       - name: Publish package to GitHub Packages
-        uses: JS-DevTools/npm-publish@v3
+        uses: JS-DevTools/npm-publish@v4
         with:
           package: 'package.json'
           registry: 'https://npm.pkg.github.com'
@@ -51,7 +51,7 @@ jobs:
           provenance: true
 
       - name: Publish package to NPM registry
-        uses: JS-DevTools/npm-publish@v3
+        uses: JS-DevTools/npm-publish@v4
         with:
           package: 'package.json'
           registry: 'https://registry.npmjs.org'
